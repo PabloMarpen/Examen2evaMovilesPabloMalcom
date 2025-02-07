@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+
+    <TextView
+        android:id="@+id/textViewNombre"
+        android:layout_width="167dp"
+        android:layout_height="55dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/textViewWeb"
+        android:layout_width="279dp"
+        android:layout_height="55dp"
+        android:layout_weight="1" />
+</LinearLayout>
