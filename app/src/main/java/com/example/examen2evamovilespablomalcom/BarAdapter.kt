@@ -12,20 +12,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 // Define la clase DiscosAdapter, que extiende RecyclerView.Adapter y especifica MyViewHolder como su ViewHolder.
-class RestauranteAdapter(
-    // esto es para los restaurantes que se muestra en el listado
-    // para inflar la lista
+// esto es para los restaurantes que se muestra en el listado
+// para inflar la lista
+class RestauranteAdapter(private val context: Context, private val listaBares: List<Bar>) : BaseAdapter() {
 
-    private val context: Context,
-    private val listaBares: List<Bar>
-) : BaseAdapter() {
-
+    // Devuelve el número total de elementos en la lista.
     override fun getCount(): Int = listaBares.size
 
+    // Devuelve el elemento de la lista en la posición especificada.
     override fun getItem(position: Int): Any = listaBares[position]
 
+    // Devuelve el identificador único del elemento en la posición especificada.
     override fun getItemId(position: Int): Long = position.toLong()
 
+    // Método para crear o reutilizar una vista y asignar los datos del bar en la lista.
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view = convertView
         if (view == null) {

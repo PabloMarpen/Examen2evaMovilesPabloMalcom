@@ -27,11 +27,16 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createBaresTable = ("CREATE TABLE " + TABLE_BARES + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NOMBRE + " TEXT,"
-                + KEY_DIRECCION + " TEXT," + KEY_VALORACION + " INT,"
-                + KEY_LATITUD + " DOUBLE," + KEY_LONGITUD + " DOUBLE," + KEY_WEB + " TEXT" + ")")
+        val createBaresTable = ("CREATE TABLE $TABLE_BARES ("
+                + "$KEY_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "$KEY_NOMBRE TEXT NOT NULL, "
+                + "$KEY_DIRECCION TEXT NOT NULL, "
+                + "$KEY_VALORACION INTEGER NOT NULL CHECK($KEY_VALORACION BETWEEN 0 AND 5), "
+                + "$KEY_LATITUD REAL NOT NULL, "
+                + "$KEY_LONGITUD REAL NOT NULL, "
+                + "$KEY_WEB TEXT)")
         db.execSQL(createBaresTable)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -48,9 +53,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         try {
             cursor = db.rawQuery(selectQuery, null)
         } catch (e: SQLiteException) {
-            db.execSQL(selectQuery)
             return ArrayList()
         }
+
 
         var id : Int
         var NombreBar : String
@@ -77,11 +82,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
                     // Verificar si los valores son NULL antes de asignarlos
                     NombreBar = cursor.getString(nombreIndex) ?: "Sin nombre"
-                    Direccion = cursor.getString(direccionIndex) ?: "Sin Direccion"
-                    Valoracion = cursor.getInt(valoracionIndex) ?: 0
-                    Latitud =  cursor.getDouble(latitudIndex) ?: 0.0
-                    Longitud = cursor.getDouble(longitudIndex) ?: 0.0
+                    Direccion = cursor.getString(direccionIndex) ?: "Sin Dirección"
+                    Valoracion = if (!cursor.isNull(valoracionIndex)) cursor.getInt(valoracionIndex) else 0
+                    Latitud = if (!cursor.isNull(latitudIndex)) cursor.getDouble(latitudIndex) else 0.0
+                    Longitud = if (!cursor.isNull(longitudIndex)) cursor.getDouble(longitudIndex) else 0.0
                     Web = cursor.getString(webIndex) ?: "Sin Web"
+
 
                     val bar = Bar(id = id, NombreBar = NombreBar, Direccion = Direccion, Valoracion = Valoracion, Latitud = Latitud, Longitud = Longitud, Web = Web)
                     listaBares.add(bar)
@@ -96,43 +102,34 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     fun updateBar(bar: Bar): Int {
         val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(KEY_ID, bar.id)
-        contentValues.put(KEY_NOMBRE, bar.NombreBar)
-        contentValues.put(KEY_DIRECCION, bar.Direccion)
-        contentValues.put(KEY_VALORACION, bar.Valoracion)
-        contentValues.put(KEY_LATITUD, bar.Latitud)
-        contentValues.put(KEY_LONGITUD, bar.Longitud)
-        contentValues.put(KEY_WEB, bar.Web)
-
-        return db.update(TABLE_BARES, contentValues, "$KEY_ID = ?", arrayOf(bar.id.toString()))
+        val contentValues = ContentValues().apply {
+            put(KEY_NOMBRE, bar.NombreBar)
+            put(KEY_DIRECCION, bar.Direccion)
+            put(KEY_VALORACION, bar.Valoracion)
+            put(KEY_LATITUD, bar.Latitud)
+            put(KEY_LONGITUD, bar.Longitud)
+            put(KEY_WEB, bar.Web)
+        }
+        return db.update(TABLE_BARES, contentValues, "$KEY_ID = ?", arrayOf(bar.id.toString())).also { db.close() }
     }
 
     fun deleteBar(bar: Bar): Int {
         val db = this.writableDatabase
-        val success = db.delete(TABLE_BARES, "$KEY_ID = ?", arrayOf(bar.id.toString()))
-        db.close()
-        return success
+        return db.delete(TABLE_BARES, "$KEY_ID = ?", arrayOf(bar.id.toString())).also { db.close() }
     }
+
 
     fun addBar(bar: Bar): Long {
-        try {
-            val db = this.writableDatabase
-            val contentValues = ContentValues()
-            contentValues.put(KEY_ID, bar.id)
-            contentValues.put(KEY_NOMBRE, bar.NombreBar)
-            contentValues.put(KEY_DIRECCION, bar.Direccion)
-            contentValues.put(KEY_VALORACION, bar.Valoracion)
-            contentValues.put(KEY_LATITUD, bar.Latitud)
-            contentValues.put(KEY_LONGITUD, bar.Longitud)
-            contentValues.put(KEY_WEB, bar.Web)
-
-            val success = db.insert(TABLE_BARES, null, contentValues)
-            db.close()
-            return success
-        } catch (e: Exception) {
-            Log.e("Error", "Error al agregar el bar", e)
-            return -1
+        val db = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(KEY_NOMBRE, bar.NombreBar)
+            put(KEY_DIRECCION, bar.Direccion)
+            put(KEY_VALORACION, bar.Valoracion)
+            put(KEY_LATITUD, bar.Latitud)
+            put(KEY_LONGITUD, bar.Longitud)
+            put(KEY_WEB, bar.Web)
         }
+        return db.insert(TABLE_BARES, null, contentValues).also { db.close() }
     }
+
 }

@@ -23,6 +23,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".CrearBar"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCI8J0ZpoP4lfuaL5OSHwvNuQBPh_F9R8Q" />
     </application>
 
 </manifest>

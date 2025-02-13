@@ -57,8 +57,7 @@ class CrearBar : AppCompatActivity() {
         dbHandler = DatabaseHelper(this)
         //recyclerView.layoutManager = LinearLayoutManager(this)
 
-        buttonInsertar.setOnClickListener { addBar()
-            }
+        buttonInsertar.setOnClickListener { addBar() }
         buttonBorrar.setOnClickListener { borrarBar() }
         buttonEditar.setOnClickListener { actualizarBar() }
 
@@ -137,8 +136,14 @@ class CrearBar : AppCompatActivity() {
                     requestPermissions()
                 }
                 Toast.makeText(applicationContext, "Bar agregado", Toast.LENGTH_LONG).show()
+                val baresActualizados = dbHandler.getAllBares()
+                val fragmentManager = supportFragmentManager
+
+                val fragment = fragmentManager.findFragmentById(R.id.frameLayoutLista) as? FragmentListadoBares
+                fragment?.actualizarLista(baresActualizados)
+
                 clearEditTexts()
-                viewBares()
+                //viewBares()
 
             }
         } else {
