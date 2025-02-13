@@ -16,6 +16,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class CrearBar : AppCompatActivity() {
@@ -57,9 +60,12 @@ class CrearBar : AppCompatActivity() {
         dbHandler = DatabaseHelper(this)
         //recyclerView.layoutManager = LinearLayoutManager(this)
 
-        buttonInsertar.setOnClickListener { addBar() }
-        buttonBorrar.setOnClickListener { borrarBar() }
-        buttonEditar.setOnClickListener { actualizarBar() }
+        buttonInsertar.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {addBar()} }
+        buttonBorrar.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {borrarBar()} }
+        buttonEditar.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {actualizarBar()} }
 
 
     }

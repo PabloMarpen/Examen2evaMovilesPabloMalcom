@@ -1,23 +1,21 @@
 package com.example.examen2evamovilespablomalcom
 
-import android.content.Context
+import android.app.SearchManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+
 
 class FragmentoDetalleBares : Fragment() , OnMapReadyCallback {
 
@@ -36,6 +34,7 @@ class FragmentoDetalleBares : Fragment() , OnMapReadyCallback {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+
         outState.putString("nombre", NombreBar)
         outState.putString("direccion", Direccion)
         outState.putString("valor", Valoracion)
@@ -44,11 +43,23 @@ class FragmentoDetalleBares : Fragment() , OnMapReadyCallback {
         Longitud?.let { outState.putDouble("longitud", it) }
         mapView.onSaveInstanceState(outState)
 
+
+
+
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.info_bares, container, false)
+
+        // esto es para cuando le des clic a la web del restaurante te lleve a la web del restaurante
+        val webRestaurante = view.findViewById<TextView>(R.id.textViewWeb)
+        webRestaurante.setOnClickListener {
+            val intent = Intent(Intent.ACTION_WEB_SEARCH)
+            intent.putExtra(SearchManager.QUERY, webRestaurante.text)
+            startActivity(intent)
+
+        }
 
         if (savedInstanceState != null) {
             NombreBar = savedInstanceState.getString("nombre")
@@ -60,6 +71,8 @@ class FragmentoDetalleBares : Fragment() , OnMapReadyCallback {
             view.findViewById<TextView>(R.id.textViewDireccion).text = Direccion
             view.findViewById<TextView>(R.id.textViewValoracion).text = Valoracion
             view.findViewById<TextView>(R.id.textViewWeb).text = Web
+
+
         }
 
         // Configurar MapView
@@ -71,6 +84,7 @@ class FragmentoDetalleBares : Fragment() , OnMapReadyCallback {
         return view
     }
 
+    // paso 3 se recibe la informacion del fragmento
     fun actualizarTexto(nombre: String, direccion: String, valoracion: String, web: String, latitud: Double, longitud: Double) {
 
         NombreBar = nombre
@@ -96,8 +110,15 @@ class FragmentoDetalleBares : Fragment() , OnMapReadyCallback {
         if (Latitud != null && Longitud != null) {
             val bar = LatLng(Latitud!!, Longitud!!)
             mMap.clear()
-            mMap.addMarker(MarkerOptions().position(bar).title(NombreBar ?: "Ubicación"))
+            mMap.addMarker(MarkerOptions().position(bar).title(Web ?: "Ubicación"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(bar))
+            mMap.setOnMarkerClickListener { marker ->
+                val intent = Intent(Intent.ACTION_WEB_SEARCH)
+                intent.putExtra(SearchManager.QUERY, Web)
+                startActivity(intent)
+                true
+            }
+
         }
     }
 

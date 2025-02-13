@@ -31,14 +31,17 @@ class FragmentListadoBares : Fragment() {
         }
     }
 
+    // paso 1 se envian los datos
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // 1. Se infla el layout que contiene la lista de bares.
         val view = inflater.inflate(R.layout.listabares, container, false)
         listViewRestaurantes = view.findViewById(R.id.ListaBaresLista)
 
+        // 2. Se configura el adaptador para la lista, asignándolo si no está ya definido.
         adaptador?.let {
             listViewRestaurantes.adapter = it
         }
@@ -49,6 +52,7 @@ class FragmentListadoBares : Fragment() {
         }
         listViewRestaurantes.adapter = adaptador
 
+        // para cuando se haga clic en la lista
         listViewRestaurantes.setOnItemClickListener { _, _, position, _ ->
             val sharedPreferences = requireContext().getSharedPreferences("UltimoBar", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
@@ -57,7 +61,10 @@ class FragmentListadoBares : Fragment() {
             val barSeleccionado = adaptador?.getItem(position) as? Bar
             barSeleccionado?.let {
                 Toast.makeText(requireContext(), "Datos enviados", Toast.LENGTH_SHORT).show()
+
+                // 4. Se envían los datos al comunicador para que otro fragmento pueda mostrarlos.
                 comunicador?.enviarDatos(it.NombreBar, it.Direccion, it.Valoracion.toString(), it.Web, it.Latitud, it.Longitud)
+
                 editor.putString("nombre", it.NombreBar)
                 editor.putString("direccion", it.Direccion)
                 editor.putString("valoracion", it.Valoracion.toString())
@@ -74,11 +81,13 @@ class FragmentListadoBares : Fragment() {
         return view
     }
 
+    //    - `setAdapter()`: Permite asignar un adaptador externo a la lista.
     fun setAdapter(adapter: RestauranteAdapter) {
         this.adaptador = adapter
         view?.findViewById<ListView>(R.id.ListaBaresLista)?.adapter = adapter
     }
 
+    //    - `actualizarLista()`: Recibe una nueva lista de bares y actualiza la vista.
     fun actualizarLista(nuevaLista: List<Bar>) {
         adaptador = RestauranteAdapter(requireContext(), nuevaLista)
         listViewRestaurantes.adapter = adaptador

@@ -20,6 +20,7 @@ import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity(), Comunicador {
     private var bares: List<Bar> = listOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity(), Comunicador {
 
         val dbHandler = DatabaseHelper(this)
         val bares = dbHandler.getAllBares()  // 👈 Recupera los bares de la BD
-        val fragment = FragmentListadoBares()
+        val fragmentLista = FragmentListadoBares()
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -43,8 +44,8 @@ class MainActivity : AppCompatActivity(), Comunicador {
         }
 
 
-        fragment.setAdapter(RestauranteAdapter(this, bares)) // 👈 Pasa la lista obtenida
-        showFragment(fragment)
+        fragmentLista.setAdapter(RestauranteAdapter(this, bares)) // 👈 Pasa la lista obtenida
+        showFragment(fragmentLista)
 
         botonCrear.setOnClickListener {
             val intent = Intent(this, CrearBar::class.java)
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity(), Comunicador {
     }
 
 
-
+    // paso 2 se envian los datos por aqui
     override fun enviarDatos(
         nombre: String,
         direccion: String,
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity(), Comunicador {
         val fragment = supportFragmentManager.findFragmentById(R.id.frameLayoutLista) as? FragmentListadoBares
         fragment?.actualizarLista(bares) // ✅ Actualiza la lista en el fragmento
 
+        // el shared preferences
         val sharedPreferences = this.getSharedPreferences("UltimoBar", Context.MODE_PRIVATE)
 
         val nombre: String = sharedPreferences.getString("nombre", "Desconocido").toString()
