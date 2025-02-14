@@ -104,4 +104,6 @@ class MainActivity : AppCompatActivity(), Comunicador {
     }
 
 
+
+
 }
